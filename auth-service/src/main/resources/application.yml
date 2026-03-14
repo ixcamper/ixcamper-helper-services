@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    # Get this URL from Neon: Dashboard -> Connection String -> JDBC
+    url: jdbc:postgresql://ep-cold-mouse-an3zk445-pooler.c-6.us-east-1.aws.neon.tech/data-db?sslmode=require&channelBinding=require
+    username: neondb_owner
+    password: npg_nC7R2hWpgMeu
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically creates tables on first run
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Neon works best when you don't hold connections open too long
+        jdbc:
+          batch_size: 10
+
+jwt:
+  secret: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437
