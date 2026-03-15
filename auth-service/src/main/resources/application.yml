@@ -8,9 +8,9 @@ spring:
     import: "optional:classpath:application-common.yml"
   datasource:
     # Get this URL from Neon: Dashboard -> Connection String -> JDBC
-    url: jdbc:postgresql://ep-cold-mouse-an3zk445-pooler.c-6.us-east-1.aws.neon.tech/data-db?sslmode=require&channelBinding=require
-    username: neondb_owner
-    password: npg_nC7R2hWpgMeu
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
