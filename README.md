@@ -59,15 +59,84 @@ Start the services in the following order:
 
 ## ⚠️ Troubleshooting
 MacOS Native Resolver (Netty)
-If you see UnsatisfiedLinkError regarding MacOSDnsServerAddressStreamProvider on Apple Silicon or Intel Macs:
-* Ensure the netty-resolver-dns-native-macos dependency is present in the Gateway pom.xml.
-* Use the classifier <classifier>osx-aarch_64</classifier> for M1/M2/M3 chips.
+If you see `UnsatisfiedLinkError` regarding `MacOSDnsServerAddressStreamProvider` on Apple Silicon or Intel Macs:
+* Ensure the `netty-resolver-dns-native-macos` dependency is present in the Gateway `pom.xml`.
+* Use the classifier `<classifier>osx-aarch_64</classifier>` for M1/M2/M3 chips.
 
 Missing Placeholders
-If the app fails with Could not resolve placeholder 'JWT_SECRET':
+If the app fails with `Could not resolve placeholder 'JWT_SECRET'`:
 * Verify the variable is set in the Run Configuration of the specific service you are starting.
-* If using terminal, ensure you export the variable in the same session you use to run the Maven command.
+* If using terminal, ensure you `export` the variable in the same session you use to run the Maven command.
 
 Dependency Issues
 If the Auth Service cannot find a class or property recently added to the Common module:
-* Run `mvn clean install` from the root to refresh the local .m2 repository and update the shared JAR file.
+* Run `mvn clean install` from the root to refresh the local `.m2` repository and update the shared JAR file.
+
+## Testing
+To test your microservices through the Gateway (Port 8080), you can use these curl commands. They are designed to verify that your AuthenticationFilter and JwtUtil are working correctly.
+
+### 1. Register a New User
+First, create a user in your database via the Auth Service (routed through the Gateway).
+```
+curl --location 'http://localhost:8080/auth/register' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username": "suhas_dev",
+    "password": "securePassword123",
+    "email": "suhas@example.com"
+}'
+```
+
+### 2. Login (Generate JWT)
+This will return the token you need for all other requests.
+
+```Bash
+curl --location 'http://localhost:8080/auth/login' \
+--header 'Content-Type: application/json' \
+--data '{
+    "username": "suhas_dev",
+    "password": "securePassword123"
+}'
+```
+
+### 3. Test Gateway Security (Missing Token)
+Try to access a secured endpoint without a header. You should see your standardized ErrorResponse from the onError method.
+
+```Bash
+curl --location 'http://localhost:8080/api/secure-endpoint'
+```
+
+Expected JSON Response:
+```JSON
+{
+    "timestamp": "2026-03-15T...",
+    "status": 401,
+    "error": "Unauthorized",
+    "message": "Missing Authorization Header",
+    "path": "/api/secure-endpoint"
+}
+```
+
+### 4. Test Access with Token
+Replace YOUR_TOKEN_HERE with the token from Step 2.
+
+```Bash
+curl --location 'http://localhost:8080/api/secure-endpoint' \
+--header 'Authorization: Bearer YOUR_TOKEN_HERE'
+```
+
+### 5. Verify the loggedInUser Header
+If you want to verify that the Gateway is correctly injecting the header for downstream services, you can create a simple "test" endpoint in any microservice:
+
+In your Controller:
+```Java
+@GetMapping("/test-header")
+public ResponseEntity<String> testHeader(@RequestHeader("loggedInUser") String user) {
+    return ResponseEntity.ok("Gateway injected user: " + user);
+}
+```
+The Test Command:
+```Bash
+curl --location 'http://localhost:8080/any-service/test-header' \
+--header 'Authorization: Bearer YOUR_TOKEN_HERE'
+```
