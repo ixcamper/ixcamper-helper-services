@@ -39,7 +39,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/token", "/auth/validate").permitAll()
+                        .requestMatchers("/auth/register", "/auth/token", "/auth/validate", "/auth/me").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Add this to handle the "Anonymous" to "401" conversion

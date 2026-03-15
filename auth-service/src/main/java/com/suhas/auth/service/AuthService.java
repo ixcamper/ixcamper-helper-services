@@ -2,6 +2,7 @@ package com.suhas.auth.service;
 
 import com.suhas.auth.entity.User;
 import com.suhas.auth.repository.UserRepository;
+import com.suhas.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,7 @@ public class AuthService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
     // 1. Inject the AuthenticationManager
     private final AuthenticationManager authenticationManager;
 
@@ -34,13 +35,18 @@ public class AuthService {
 
         // 3. Only if authentication is successful do we generate the token
         if (authenticate.isAuthenticated()) {
-            return jwtService.generateToken(username);
+            return jwtUtil.generateToken(username);
         } else {
             throw new RuntimeException("Invalid username or password");
         }
     }
 
     public void validateToken(String token) {
-        jwtService.validateToken(token); // Ensure your jwtService has a validation method
+        jwtUtil.validateToken(token); // Ensure your jwtService has a validation method
+    }
+
+    public User getUserByUsername(String username) {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

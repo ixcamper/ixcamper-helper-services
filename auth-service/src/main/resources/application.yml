@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: auth-service
+  config:
+    import: "optional:classpath:application-common.yml"
   datasource:
     # Get this URL from Neon: Dashboard -> Connection String -> JDBC
     url: jdbc:postgresql://ep-cold-mouse-an3zk445-pooler.c-6.us-east-1.aws.neon.tech/data-db?sslmode=require&channelBinding=require

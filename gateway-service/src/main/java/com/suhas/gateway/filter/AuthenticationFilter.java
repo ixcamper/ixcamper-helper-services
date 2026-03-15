@@ -1,14 +1,21 @@
 package com.suhas.gateway.filter;
 
-import com.suhas.gateway.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
+import com.suhas.common.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j // This provides the 'log' variable
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     @Autowired
@@ -24,12 +31,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            // 1. Check if the route is secured (not /auth/register or /auth/token)
             if (validator.isSecured.test(exchange.getRequest())) {
-
-                // 2. Check if the header contains the Authorization entry
+                // Check if header contains token
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new RuntimeException("Missing Authorization header");
+                    return handleUnAuthorized(exchange, "Missing Authorization Header");
                 }
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
@@ -38,15 +43,39 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
 
                 try {
-                    // 3. Validate the token
                     jwtUtil.validateToken(authHeader);
+
+                    // If valid, pass the username header to downstream
+                    String username = jwtUtil.extractUsername(authHeader);
+                    exchange.getRequest().mutate()
+                            .header("loggedInUser", username)
+                            .build();
+
+                } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                    log.error("JWT Token has expired: {}", e.getMessage()); // Logs to console
+                    return handleUnAuthorized(exchange, "Token Expired. Please login again.");
+                } catch (io.jsonwebtoken.security.SignatureException e) {
+                    log.error("Invalid JWT Signature: {}", e.getMessage()); // Logs to console
+                    return handleUnAuthorized(exchange, "Invalid Token Signature.");
                 } catch (Exception e) {
-                    System.out.println("Invalid Access...!");
-                    throw new RuntimeException("Unauthorized access to application");
+                    log.error("Authentication failed: {}", e.getMessage()); // Logs any other error
+                    return handleUnAuthorized(exchange, "Invalid Access...!");
                 }
             }
             return chain.filter(exchange);
         });
+    }
+
+    private Mono<Void> handleUnAuthorized(ServerWebExchange exchange, String message) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+        // Create a JSON response body
+        String responseBody = "{\"message\": \"" + message + "\"}";
+
+        DataBuffer buffer = response.bufferFactory().wrap(responseBody.getBytes());
+        return response.writeWith(Mono.just(buffer));
     }
 
     public static class Config {
