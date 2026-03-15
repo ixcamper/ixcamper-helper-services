@@ -1,10 +1,12 @@
 package com.suhas.auth.controller;
 
 import com.suhas.auth.dto.AuthRequest;
+import com.suhas.auth.dto.AuthResponse;
 import com.suhas.auth.entity.User;
 import com.suhas.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,9 +25,15 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public String getToken(@RequestBody AuthRequest authRequest) {
-        // Change this line to match the method name in your AuthService
-        return authService.loginAndGenerateToken(authRequest.getUsername(), authRequest.getPassword());
+    public ResponseEntity<AuthResponse> getToken(@RequestBody AuthRequest authRequest) {
+        String token = authService.loginAndGenerateToken(authRequest.getUsername(), authRequest.getPassword());
+
+        AuthResponse response = AuthResponse.builder()
+                .token(token)
+                .username(authRequest.getUsername())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/validate")
