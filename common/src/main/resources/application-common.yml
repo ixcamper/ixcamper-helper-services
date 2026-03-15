@@ -2,3 +2,5 @@ logging:
   level:
     com.suhas: DEBUG
     org.springframework.cloud.gateway: ERROR
+jwt:
+  secret: ${JWT_SECRET}
