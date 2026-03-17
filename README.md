@@ -57,6 +57,18 @@ Start the services in the following order:
 └── pom.xml             # Parent Multi-module POM
 ```
 
+## 📖 API Documentation
+The project uses Swagger UI to provide an interactive interface for testing endpoints.
+* Gateway Swagger (Aggregated): `http://localhost:8080/swagger-ui.html`
+* Auth Service (Direct): `http://localhost:8081/swagger-ui/index.html`
+
+How to test secured endpoints in Swagger:
+1. Open the Gateway Swagger UI.
+2. Select "Auth Service" from the definition dropdown (top right).
+3. Use the `/login` endpoint to generate a token.
+4. Click the Authorize (padlock) button at the top.
+5. Enter your token and click Authorize. All subsequent "Try it out" requests will now include the Bearer token.
+
 ## ⚠️ Troubleshooting
 MacOS Native Resolver (Netty)
 If you see `UnsatisfiedLinkError` regarding `MacOSDnsServerAddressStreamProvider` on Apple Silicon or Intel Macs:
