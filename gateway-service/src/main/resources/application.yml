@@ -18,3 +18,27 @@ spring:
             - Path=/auth/me
           filters:
             - AuthenticationFilter
+        # Route for the Auth Service API documentation
+        - id: auth-api-docs
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/v3/api-docs/**
+          filters:
+            - RewritePath=/auth/(?<path>.*), /$\{path}
+
+        # Route for actual Auth Service functional endpoints
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<path>.*), /$\{path}
+
+springdoc:
+  swagger-ui:
+    # This creates the dropdown menu in the top right of Swagger
+    urls:
+      - name: Auth Service
+        url: /auth/v3/api-docs
+      - name: Gateway Service
+        url: /v3/api-docs

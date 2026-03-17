@@ -15,6 +15,13 @@ public class GatewaySecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable) // Fixes 403 on POST requests
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/auth/v3/api-docs/**",  // Path for Auth Service docs
+                                "/webjars/**"            // Required for Swagger UI assets
+                        ).permitAll()
                         .pathMatchers("/auth/**").permitAll()   // Let auth traffic through
                         .anyExchange().authenticated()          // Secure others
                 )

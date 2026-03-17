@@ -2,5 +2,11 @@ logging:
   level:
     com.suhas: DEBUG
     org.springframework.cloud.gateway: ERROR
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
 jwt:
   secret: ${JWT_SECRET}
