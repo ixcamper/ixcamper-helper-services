@@ -56,6 +56,7 @@ Start the services in the following order:
 ├── frontend/           # Angular 21 (Vercel deployment)
 └── pom.xml             # Parent Multi-module POM
 ```
+---
 
 ## 📖 API Documentation
 The project uses Swagger UI to provide an interactive interface for testing endpoints.
@@ -68,6 +69,28 @@ How to test secured endpoints in Swagger:
 3. Use the `/login` endpoint to generate a token.
 4. Click the Authorize (padlock) button at the top.
 5. Enter your token and click Authorize. All subsequent "Try it out" requests will now include the Bearer token.
+
+---
+
+## 🔍 Debugging & Testing
+
+### Centralized Logging
+The Gateway includes a **Global Logging Filter** that tracks all traffic. Check the service logs to see real-time routing:
+- **Request**: Logs the HTTP Method and incoming Path.
+- **Response**: Logs the resulting HTTP Status Code (e.g., 200, 401, 500).
+
+### API Documentation (Swagger)
+Access the interactive documentation to test endpoints without external tools:
+- **Gateway (All APIs)**: `http://localhost:8080/swagger-ui.html`
+- **Auth Service (Direct)**: `http://localhost:8081/swagger-ui/index.html`
+
+### Manual API Test
+**Login via Gateway:**
+curl -X POST http://localhost:8080/auth/login \
+-H "Content-Type: application/json" \
+-d '{"username":"suhas_dev","password":"your_password"}'
+
+---
 
 ## ⚠️ Troubleshooting
 MacOS Native Resolver (Netty)
@@ -83,6 +106,8 @@ If the app fails with `Could not resolve placeholder 'JWT_SECRET'`:
 Dependency Issues
 If the Auth Service cannot find a class or property recently added to the Common module:
 * Run `mvn clean install` from the root to refresh the local `.m2` repository and update the shared JAR file.
+
+---
 
 ## Testing
 To test your microservices through the Gateway (Port 8080), you can use these curl commands. They are designed to verify that your AuthenticationFilter and JwtUtil are working correctly.
