@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,12 +44,21 @@ public class AuthController {
         return "Token is valid";
     }
 
+//    @GetMapping("/me")
+//    public User getCurrentUser(@RequestHeader("loggedInUser") String username) {
+//        if (username == null || username.isEmpty()) {
+//            // This means the request likely bypassed the Gateway
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Direct access not allowed");
+//        }
+//        return authService.getUserByUsername(username);
+//    }
+
     @GetMapping("/me")
-    public User getCurrentUser(@RequestHeader("loggedInUser") String username) {
-        if (username == null || username.isEmpty()) {
-            // This means the request likely bypassed the Gateway
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Direct access not allowed");
+    public User getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        // Spring Security automatically populates this from the JWT token
+        if (userDetails == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
-        return authService.getUserByUsername(username);
+        return authService.getUserByUsername(userDetails.getUsername());
     }
 }
