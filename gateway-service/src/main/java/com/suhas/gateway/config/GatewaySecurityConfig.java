@@ -22,6 +22,7 @@ public class GatewaySecurityConfig {
                                 "/auth/v3/api-docs/**",  // Path for Auth Service docs
                                 "/webjars/**"            // Required for Swagger UI assets
                         ).permitAll()
+                        .pathMatchers("/actuator/health/**").permitAll()
                         .pathMatchers("/auth/**").permitAll()   // Let auth traffic through
                         .anyExchange().authenticated()          // Secure others
                 )

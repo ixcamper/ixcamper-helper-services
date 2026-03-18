@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,14 @@ public class OpenApiConfig {
                 // Add JWT Security Support to Swagger UI
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes("Bearer Authentication", createSecurityScheme()));
+    }
+
+    @Bean
+    public GroupedOpenApi commonActuatorApi() {
+        return GroupedOpenApi.builder()
+                .group("Actuator")
+                .pathsToMatch("/actuator/**")
+                .build();
     }
 
     private SecurityScheme createSecurityScheme() {

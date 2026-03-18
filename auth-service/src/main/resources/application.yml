@@ -1,5 +1,6 @@
 server:
   port: 8081
+  forward-headers-strategy: framework
 spring:
   application:
     name: auth-service
@@ -28,3 +29,27 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/auth/v3/api-docs/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator # Ensure this is explicit
+  endpoint:
+    health:
+      show-details: always  # Reveals the 'db' component
+      show-components: always
+  # This tells Spring NOT to treat actuator as a static resource
+  server:
+    add-application-context-header: false
+
+springdoc:
+  # Set this to FALSE to stop the automatic 3-endpoint injection
+  show-actuator: false
+  api-docs:
+    path: /v3/api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    use-root-path: false

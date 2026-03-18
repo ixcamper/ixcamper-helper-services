@@ -1,4 +1,6 @@
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: gateway-service
   config:
@@ -41,4 +43,15 @@ springdoc:
       - name: Auth Service
         url: /auth/v3/api-docs
       - name: Gateway Service
-        url: /v3/api-docs
+        url: /v3/api-docs`
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

@@ -3,6 +3,7 @@ logging:
     com.suhas: DEBUG
     org.springframework.cloud.gateway: ERROR
 springdoc:
+  show-actuator: true
   api-docs:
     path: /v3/api-docs
   swagger-ui:
