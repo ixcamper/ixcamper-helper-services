@@ -1,6 +1,7 @@
 package com.suhas.auth.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -10,14 +11,6 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class AuthOpenApiConfig {
-
-    @Bean
-    @Primary // This is the "Golden Ticket" that fixes the startup error
-    public OpenAPI authServiceOpenAPI() { // Changed from customOpenAPI
-        return new OpenAPI()
-                .addServersItem(new Server().url("/auth").description("Gateway Routed Path"));
-    }
-
     @Bean
     public OpenApiCustomizer filterActuatorEndpoints() {
         return openApi -> {
@@ -37,6 +30,15 @@ public class AuthOpenApiConfig {
                 .group("Auth-Actuator")
                 // This manually selects the specific endpoint even if show-actuator is false
                 .pathsToMatch("/actuator/health")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("Public-API")
+                .pathsToMatch("/api/**") // Adjust to your actual API prefix
+                .addOpenApiCustomizer(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("Bearer Authentication")))
                 .build();
     }
 }

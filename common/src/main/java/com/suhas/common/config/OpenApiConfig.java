@@ -10,20 +10,27 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET) // Add this!
 public class OpenApiConfig {
 
     @Bean
+    @Primary
     public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "BearerAuth"; // Use a simple ID without spaces
         return new OpenAPI()
-                // Force Swagger to send requests to the Gateway port
                 .addServersItem(new Server().url("http://localhost:8080").description("API Gateway"))
-                .info(new Info().title("Microservices API").version("1.0").description("Suhas's Secure API System"))
-                // Add JWT Security Support to Swagger UI
-                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes("Bearer Authentication", createSecurityScheme()));
+                .info(new Info().title("Microservices API").version("1.0"))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 
     @Bean
@@ -31,6 +38,7 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("Actuator")
                 .pathsToMatch("/actuator/**")
+                .addOpenApiCustomizer(openApi -> openApi.addSecurityItem(new SecurityRequirement().addList("Bearer Authentication")))
                 .build();
     }
 
