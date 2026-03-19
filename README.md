@@ -83,6 +83,7 @@ The Gateway includes a **Global Logging Filter** that tracks all traffic. Check 
 Access the interactive documentation to test endpoints without external tools:
 - **Gateway (All APIs)**: `http://localhost:8080/swagger-ui.html`
 - **Auth Service (Direct)**: `http://localhost:8081/swagger-ui/index.html`
+- ** Try if above didnt work `http://localhost:8080/webjars/swagger-ui/index.html#/`
 
 ### Manual API Test
 **Login via Gateway:**
