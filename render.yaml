@@ -1,0 +1,20 @@
+services:
+  # 1. The Auth Service
+  - type: web
+    name: auth-service
+    runtime: docker
+    dockerContext: .
+    dockerfile: Dockerfile # Use the one created above
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+  # 2. The Gateway Service (If you want to deploy it too)
+  - type: web
+    name: gateway-service
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: gateway.Dockerfile # You'd create a similar one for gateway
+    envVars:
+      - key: AUTH_SERVICE_URL
+        value: http://auth-service:8080
