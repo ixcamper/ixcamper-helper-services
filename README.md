@@ -42,7 +42,7 @@ mvn clean install -DskipTests
 ### 3. Running Services
 Start the services in the following order:
 1. Common Module (Build only)
-2. Auth-Service (Default Port: 8081)
+2. Auth-Service (Default Port: 10000)
 3. Gateway-Service (Default Port: 8080)
 
 ---
@@ -61,7 +61,7 @@ Start the services in the following order:
 ## 📖 API Documentation
 The project uses Swagger UI to provide an interactive interface for testing endpoints.
 * Gateway Swagger (Aggregated): `http://localhost:8080/swagger-ui.html`
-* Auth Service (Direct): `http://localhost:8081/swagger-ui/index.html`
+* Auth Service (Direct): `http://localhost:10000/swagger-ui/index.html`
 
 How to test secured endpoints in Swagger:
 1. Open the Gateway Swagger UI.
@@ -82,7 +82,7 @@ The Gateway includes a **Global Logging Filter** that tracks all traffic. Check 
 ### API Documentation (Swagger)
 Access the interactive documentation to test endpoints without external tools:
 - **Gateway (All APIs)**: `http://localhost:8080/swagger-ui.html`
-- **Auth Service (Direct)**: `http://localhost:8081/swagger-ui/index.html`
+- **Auth Service (Direct)**: `http://localhost:10000/swagger-ui/index.html`
 - ** Try if above didnt work `http://localhost:8080/webjars/swagger-ui/index.html#/`
 
 ### Manual API Test
