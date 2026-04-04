@@ -43,7 +43,7 @@ springdoc:
       - name: Auth Service
         url: /auth/v3/api-docs
       - name: Gateway Service
-        url: /v3/api-docs`
+        url: /v3/api-docs
 
 management:
   endpoints:
