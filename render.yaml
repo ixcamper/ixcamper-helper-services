@@ -4,7 +4,7 @@ services:
     name: auth-service
     runtime: docker
     dockerContext: .
-    dockerfilePath: auth.Dockerfile # Point to a specific Dockerfile
+    dockerfilePath: auth-service/auth.Dockerfile # Point to a specific Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -17,7 +17,7 @@ services:
     name: gateway-service
     runtime: docker
     dockerContext: .
-    dockerfilePath: gateway.Dockerfile
+    dockerfilePath: gateway-service/gateway.Dockerfile
     plan: free
     envVars:
       - key: PORT
