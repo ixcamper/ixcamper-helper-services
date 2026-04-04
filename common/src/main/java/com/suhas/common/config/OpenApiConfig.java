@@ -21,7 +21,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "BearerAuth"; // Use a simple ID without spaces
         return new OpenAPI()
-                .addServersItem(new Server().url("http://localhost:8080").description("API Gateway"))
+//                .addServersItem(new Server().url("http://localhost:8080").description("API Gateway"))
+                .addServersItem(new Server().url("/").description("Default Server URL"))
                 .info(new Info().title("Microservices API").version("1.0"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()

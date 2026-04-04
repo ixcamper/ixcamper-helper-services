@@ -22,13 +22,6 @@ spring:
         # Neon works best when you don't hold connections open too long
         jdbc:
           batch_size: 10
-  cloud:
-    gateway:
-      routes:
-        - id: auth-service-swagger
-          uri: lb://auth-service
-          predicates:
-            - Path=/auth/v3/api-docs/**
 
 management:
   endpoints:
