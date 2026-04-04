@@ -2,13 +2,14 @@ services:
   # Service 1: The Auth Service
   - type: web
     name: auth-service
+    healthCheckPath: /actuator/health
     runtime: docker
     dockerContext: .
     dockerfilePath: auth-service/auth.Dockerfile # Point to a specific Dockerfile
     plan: free
     envVars:
       - key: PORT
-        value: 8081
+        value: 10000
       - key: SPRING_PROFILES_ACTIVE
         value: prod
 
