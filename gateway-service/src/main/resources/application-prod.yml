@@ -1,0 +1,63 @@
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+  config:
+    import: "optional:classpath:application-common.yml" # Imports shared logging levels
+
+  cloud:
+    gateway:
+      routes:
+        # 1. MOVE THIS TO THE TOP
+        - id: auth-api-docs
+          uri: http://auth-service:10000
+          predicates:
+            - Path=/auth/v3/api-docs/**
+          filters:
+            - RewritePath=/auth/(?<path>.*), /${path}
+
+        # 2. Public endpoints (login/register)
+        - id: auth-public
+          uri: http://auth-service:10000
+          predicates:
+            - Path=/auth/register,/auth/token,/auth/validate
+          filters:
+            - RewritePath=/auth/(?<path>.*), /${path}
+
+        # 3. Protected endpoints (requires token)
+        - id: auth-protected
+          uri: http://auth-service:10000
+          predicates:
+            - Path=/auth/me
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/auth/(?<path>.*), /${path}
+
+        # 4. Catch-all (Keep this LAST)
+        - id: auth-service
+          uri: http://auth-service:10000
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<path>.*), /${path}
+
+springdoc:
+  swagger-ui:
+    # This creates the dropdown menu in the top right of Swagger
+    urls:
+      - name: Auth Service
+        url: /auth/v3/api-docs
+      - name: Gateway Service
+        url: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
